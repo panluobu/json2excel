@@ -9,6 +9,7 @@ type_dict = {
     "<class 'int'>":"int",
     "<class 'str'>":"str",
     "<class 'dict'>":"dict",
+    "<class 'list'>":"list",
     "<class 'NoneType'>":"NoneType"
 }
 
@@ -25,10 +26,11 @@ def handle_data(data, key_list):
     # print(data)
     return data
 def get_key_list(data):
-    key_list1 = list(list(data.values())[0].keys())
+    # print(type(data[0].get("value")))
     value_list = []
+    key_list1 = list(list(data.values())[0].keys())
     for i, id in enumerate(data):
-        # i是key的index，id是key
+    # i是key的index，id是key
         item = data[id]    
         key_list = list(item.keys())
         values = list(item.values())
@@ -38,8 +40,10 @@ def get_key_list(data):
         for j , key in enumerate(key_list):
             if key not in key_list1:
                 key_list1.append(key)
-            # if values[j] not in value_list:
                 value_list.append(values[j])
+
+
+
         # 如果字典第一组key比后续的多
         # for j , key in enumerate(key_list1):
         #     # j是key的index，key是key
@@ -52,7 +56,6 @@ def get_key_list(data):
     type_list = [str(type(1))] + type_list
     type_list = list(type_dict[x] for x in type_list)
     return key_list1, type_list
-
 def get_data_attribute(data):
     data_attribute = []
     value_list = []
@@ -71,7 +74,6 @@ def get_data_attribute(data):
     type_list = list(type_dict[x] for x in type_list)
     # print(type_list)
     return data_attribute
-
 def get_key_index(data_attribute):
     key_index = {}
     for i, d in enumerate(data_attribute):
@@ -86,20 +88,11 @@ def json2excel(path, data, sheet_name):
     data = handle_data(data, key_list)
     data_attribute = get_data_attribute(data)
     key_index = get_key_index(data_attribute)
-    # key_index ={'series':2, 'index':3, 'score':4, 'color':5, 'temperature':6, 'sweetness':7, 'calorie':8, 'layer':9, 'add_y':10, 'animation':11, 'coloring':12}
-    # key_index = {**{'id':1}, **key_index}
-    # data_attribute = list(key_index.keys())
-    # type_list = ['str', 'int', 'int', 'str', 'str', 'int', 'int', 'int', 'int', 'str', 'str']
-    # type_list = ['int']+type_list
-    # row_m = len(data_attribute)
-    # column_m = len(material)
     wb.create_sheet(title=sheet_name,index=-1)
     ws = wb[sheet_name]
-
     ws.cell(row=1, column=1, value=data_attribute[0])
     ws.cell(row=2, column=1, value=type_list[0])
     for i, id in enumerate(data):
-        # print(i,id)
         ws.cell(row=i+3, column=1, value=id)
         item = data[id]
         for j in item:
@@ -115,9 +108,21 @@ def json2excel(path, data, sheet_name):
                 ws.cell(row=i+3, column=key_index[j], value=str(c_value))
 
     wb.save(path)
+
+def list2excel(path, data, sheet_name):
+    # wb.create_sheet(title=sheet_name,index=-1)
+    # ws = wb[sheet_name]
+    # ws.cell(row=1, column=1, value=data_attribute[0])
+    # ws.cell(row=2, column=1, value=type_list[0])
+    data_dict = {}
+    for i, d in enumerate(data):
+        data_dict[str(i+1)] = d
+    # print(data_dict)
+    json2excel(path, data_dict, sheet_name)
 if __name__ == "__main__":
     path = "./Excel/json2excel.xlsx"
     material = {"81001": {'series': 'fruit', "id":666,'index': 28, 'score': 120, 'color': 'colourful', 'temperature': 'ruan', 'sweetness': 15, 'calorie': 10, 'layer': 4, 'add_y': 15, 'animation': 'bc_cake_front'},
         "81002": {'series': 'candy', 'it':222,'index': 27, 'score': 120, 'color': 'colourful', 'temperature': 'cui', 'sweetness': 20, 'calorie': 35, 'layer': 3, 'add_y': 25, 'animation': 'bc_cake_center'},
         "81003": {'series': 'fruit', "id":666,'index': 28, 'score': 120, 'color': 'colourful', 'temperature': 'ruan', 'sweetness': 15, 'calorie': 10, 'layer': 4, 'add_y': 15, 'animation': 'bc_cake_front'}}
-    json2excel(path, material, "material")
+    mlist = [{'name': 'bc_combo_1', 'type': 1, 'attribute': 'color', 'score': 5, 'value': ['white', 'white']}, {'name': 'bc_combo_2', 'type': 1, 'attribute': 'color', 'score': 5, 'value': ['red', 'red']}, {'name': 'bc_combo_3', 'type': 1, 'attribute': 'color', 'score': 5, 'value': ['black', 'black']}, {'name': 'bc_combo_4', 'type': 1, 'attribute': 'color', 'score': 5, 'value': ['colourful', 'colourful']}, {'name': 'bc_combo_5', 'type': 1, 'attribute': 'color', 'score': 10, 'value': ['red', 'white']}, {'name': 'bc_combo_6', 'type': 1, 'attribute': 'color', 'score': 10, 'value': ['white', 'red']}, {'name': 'bc_combo_7', 'type': 1, 'attribute': 'series', 'score': 10, 'value': ['cream', 'fruit']}, {'name': 'bc_combo_8', 'type': 1, 'attribute': 'series', 'score': 10, 'value': ['fruit', 'cream']}, {'name': 'bc_combo_9', 'type': 1, 'attribute': 'series', 'score': 10, 'value': ['choc', 'candy']}, {'name': 'bc_combo_10', 'type': 1, 'attribute': 'series', 'score': 10, 'value': ['candy', 'choc']}, {'name': 'bc_combo_11', 'type': 1, 'attribute': 'series', 'score': 5, 'value': ['strawberry，strawberry']}, {'name': 'bc_combo_12', 'type': 1, 'attribute': 'temperature', 'score': 5, 'value': ['ruan', 'ruan']}, {'name': 'bc_combo_13', 'type': 1, 'attribute': 'temperature', 'score': 5, 'value': ['hua', 'hua']}, {'name': 'bc_combo_14', 'type': 2, 'attribute': 'color', 'score': 15, 'value': 4}, {'name': 'bc_combo_15', 'type': 2, 'attribute': 'temperature', 'score': 15, 'value': 4}, {'name': 'bc_combo_16', 'type': 3, 'attribute': 'layer=3', 'score': 10, 'value': 3}, {'name': 'bc_combo_17', 'type': 3, 'attribute': 'series=fruit', 'score': 5, 'value': 2}, {'name': 'bc_combo_18', 'type': 3, 'attribute': 'temperature=cui', 'score': 10, 'value': 3}, {'name': 'bc_combo_19', 'type': 3, 'attribute': 'color=colourful', 'score': 10, 'value': 3}, {'name': 'bc_combo_20', 'type': 3, 'attribute': 'series=choc', 'score': 20, 'value': 4}]
+    list2excel(path, mlist, "mlist")
